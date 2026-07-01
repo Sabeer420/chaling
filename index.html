@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>茶陵红茶 · 防伪溯源</title>
+    <style>
+        :root {
+            /* === 茶红主色调 === */
+            --red-deep: #7B1F2B;
+            /* 深茶红 - 用于重要标识 */
+            --red-primary: #9B2D30;
+            /* 主茶红 - 标题、按钮 */
+            --red-warm: #B8454A;
+            /* 暖茶红 - 强调装饰 */
+            --red-light: #F2E0D8;
+            /* 浅茶粉 - 背景点缀 */
+            --red-soft: #FDF5F1;
+            /* 极浅粉 - 大面积背景 */
+            --gold: #C8A97E;
+            /* 雅金 - 点缀线条 */
+            --gold-light: #E8D5C0;
+            /* 浅金 - 边框 */
+            --gold-dark: #A6845C;
+            /* 深金 - 图标 */
+            --cream: #FDF8F4;
+            /* 暖米色 - 主背景 */
+            --white: #FFFFFF;
+            /* 纯白 - 卡片 */
+            --text-dark: #3D2010;
+            /* 深棕 - 正文 */
+            --text-mid: #6B4D3A;
+            /* 中棕 - 辅助文字 */
+            --text-light: #9B8576;
+            /* 浅棕 - 次要信息 */
+            --border: #EDE0D5;
+            /* 边框色 */
+            --shadow-sm: 0 2px 12px rgba(123, 31, 43, 0.06);
+            --shadow-md: 0 4px 24px rgba(123, 31, 43, 0.10);
+            --shadow-lg: 0 8px 40px rgba(123, 31, 43, 0.14);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+            --font-serif: 'Noto Serif SC', 'STSong', 'Songti SC', 'SimSun', 'KaiTi', 'STKaiti', '楷体', '华文楷体',
+                serif;
+            --font-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', 'Noto Sans SC', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--cream);
+            color: var(--text-dark);
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0;
+            background-image:
+                radial-gradient(ellipse at 50% 0%, rgba(155, 45, 48, 0.04) 0%, transparent 70%),
+                radial-gradient(ellipse at 85% 20%, rgba(200, 169, 126, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 15% 60%, rgba(155, 45, 48, 0.03) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* === 手机模拟容器 === */
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            min-height: 100vh;
+            background: var(--cream);
+            position: relative;
+            overflow-x: hidden;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), var(--shadow-lg);
+        }
+
+        @media (min-width: 431px) {
+            body {
+                padding: 20px 0;
+                align-items: flex-start;
+            }
+            .app-container {
+                border-radius: 28px;
+                min-height: auto;
+                margin: 0 auto;
+            }
+        }
+
+        /* === 顶部状态栏模拟 === */
+        .status-bar {
+            height: 44px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            font-size: 12px;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+        .status-bar .time {
+            font-weight: 500;
+        }
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .status-icons span {
+            font-size: 11px;
+        }
+
+        /* === 顶部品牌头 === */
+        .brand-header {
+            background: linear-gradient(165deg, #8B1F2B 0%, #9B2D30 30%, #7B1F2B 100%);
+            padding: 32px 28px 36px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            color: #fff;
+        }
+        .brand-header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            pointer-events: none;
+        }
+        .brand-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+        }
+        .brand-header .header-ornament {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--gold);
+            opacity: 0.6;
+            border-radius: 1px;
+        }
+        .brand-header .brand-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.13);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            position: relative;
+            z-index: 1;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
+        }
+        .brand-header .brand-name {
+            font-family: var(--font-serif);
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 4px;
+        }
+        .brand-header .brand-subtitle {
+            font-size: 13px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+            color: var(--gold-light);
+        }
+        .brand-header .brand-tag {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        /* 波浪分隔 */
+        .wave-divider {
+            position: relative;
+            height: 28px;
+            background: var(--cream);
+            margin-top: -2px;
+            clip-path: ellipse(55% 100% at 50% 0%);
+            z-index: 2;
+        }
+
+        /* === 主内容区 === */
+        .main-content {
+            padding: 0 20px 32px;
+            position: relative;
+            z-index: 2;
+            margin-top: -6px;
+        }
+
+        /* === 防伪验证卡片 === */
+        .verify-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px 22px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 18px;
+            position: relative;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .verify-card .card-accent {
+            position: absolute;
+            top: 0;
+            left: 28px;
+            width: 48px;
+            height: 3px;
+            background: var(--red-primary);
+            border-radius: 0 0 3px 3px;
+        }
+        .verify-status-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .verify-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .verify-icon-wrap.verified {
+            background: linear-gradient(135deg, #9B2D30 0%, #7B1F2B 100%);
+            box-shadow: 0 4px 16px rgba(155, 45, 48, 0.35);
+        }
+        .verify-icon-wrap .icon-check {
+            font-size: 22px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .verify-icon-wrap .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(155, 45, 48, 0.4);
+            animation: pulse-ring 2.2s ease-out infinite;
+            pointer-events: none;
+        }
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        .verify-text .verify-title {
+            font-family: var(--font-serif);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--red-deep);
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+        .verify-text .verify-subtitle {
+            font-size: 12px;
+            color: var(--text-mid);
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        .verify-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .verify-detail-item {
+            flex: 1;
+            min-width: 90px;
+            background: #FDF8F4;
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            text-align: center;
+            border: 1px solid #F5EDE6;
+        }
+        .verify-detail-item .detail-label {
+            font-size: 10px;
+            color: var(--text-light);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .verify-detail-item .detail-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: 0.5px;
+            font-family: var(--font-sans);
+        }
+        .verify-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #FDF5F1 0%, #FEFAF7 100%);
+            border: 1px solid #E8D5C0;
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--gold-dark);
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        .verify-badge .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--gold-dark);
+            animation: dot-glow 2s ease-in-out infinite;
+        }
+        @keyframes dot-glow {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(168, 132, 92, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(168, 132, 92, 0);
+            }
+        }
+
+        /* === 简介卡片 === */
+        .intro-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .intro-card .section-label {
+            display: inline-block;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--red-primary);
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border: 1px solid rgba(155, 45, 48, 0.2);
+            border-radius: 12px;
+            background: rgba(155, 45, 48, 0.03);
+        }
+        .intro-card .section-title {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .intro-card .section-desc {
+            font-size: 14px;
+            color: var(--text-mid);
+            line-height: 1.85;
+            letter-spacing: 0.3px;
+            text-align: justify;
+        }
+        .intro-card .highlight-text {
+            color: var(--red-primary);
+            font-weight: 500;
+        }
+        .intro-card .divider-dot {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 14px 0;
+            color: var(--text-light);
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+        .intro-card .divider-dot::before,
+        .intro-card .divider-dot::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .feature-item {
+            background: #FDF8F4;
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+            border: 1px solid #F5EDE6;
+        }
+        .feature-item .feature-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .feature-item .feature-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: 1px;
+        }
+        .feature-item .feature-detail {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        /* === 神农故事卡片 === */
+        .story-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .story-card::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 1px solid rgba(200, 169, 126, 0.2);
+            pointer-events: none;
+        }
+        .story-card .story-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .story-card .story-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FDF5F1 0%, #FEF0E8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+            border: 1.5px solid var(--gold-light);
+        }
+        .story-card .story-title-group .story-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--red-primary);
+            font-weight: 500;
+        }
+        .story-card .story-title-group .story-title {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: 1.5px;
+            line-height: 1.3;
+        }
+        .story-card .story-quote {
+            font-family: var(--font-serif);
+            font-size: 15px;
+            color: var(--red-deep);
+            font-style: italic;
+            letter-spacing: 1px;
+            line-height: 1.8;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #FEFAF7 0%, #FDF5F1 100%);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--red-primary);
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .story-card .story-body {
+            font-size: 14px;
+            color: var(--text-mid);
+            line-height: 1.85;
+            letter-spacing: 0.3px;
+            text-align: justify;
+            position: relative;
+            z-index: 1;
+        }
+        .story-card .story-highlight {
+            display: inline-block;
+            background: linear-gradient(180deg, transparent 55%, rgba(200, 169, 126, 0.25) 55%);
+            padding: 0 4px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* === 底部 === */
+        .footer-section {
+            text-align: center;
+            padding: 20px 20px 32px;
+            position: relative;
+            z-index: 2;
+        }
+        .footer-ornament {
+            width: 32px;
+            height: 1.5px;
+            background: var(--gold);
+            margin: 0 auto 12px;
+            opacity: 0.5;
+            border-radius: 1px;
+        }
+        .footer-text {
+            font-size: 11px;
+            color: var(--text-light);
+            letter-spacing: 1.5px;
+            line-height: 1.8;
+        }
+        .footer-text strong {
+            color: var(--text-mid);
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+
+        /* === 装饰水印 === */
+        .watermark {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.025;
+            font-family: var(--font-serif);
+            font-size: 120px;
+            color: var(--red-primary);
+            z-index: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            letter-spacing: 20px;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        /* === 滚动条美化 === */
+        .app-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .app-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .app-container::-webkit-scrollbar-thumb {
+            background: rgba(155, 45, 48, 0.15);
+            border-radius: 10px;
+        }
+
+        /* === 响应式微调 === */
+        @media (max-width: 430px) {
+            .brand-header {
+                padding: 28px 20px 32px;
+            }
+            .brand-header .brand-name {
+                font-size: 23px;
+                letter-spacing: 2px;
+            }
+            .main-content {
+                padding: 0 14px 24px;
+            }
+            .verify-card,
+            .intro-card,
+            .story-card {
+                padding: 18px 16px;
+            }
+            .feature-grid {
+                gap: 8px;
+            }
+            .feature-item {
+                padding: 10px 8px;
+            }
+        }
+
+        /* === 打印样式（可选） === */
+        @media print {
+            body {
+                background: #fff;
+            }
+            .app-container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+            .brand-header {
+                background: #9B2D30 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 手机模拟容器 -->
+    <div class="app-container" id="app">
+
+        <!-- 顶部状态栏 -->
+        <div class="status-bar">
+            <span class="time">9:41</span>
+            <span class="status-icons">
+                <span>●●●●○</span>
+                <span>WiFi</span>
+                <span>🔋</span>
+            </span>
+        </div>
+
+        <!-- 品牌头部 -->
+        <header class="brand-header">
+            <div class="header-ornament"></div>
+            <div class="brand-icon">🍃</div>
+            <h1 class="brand-name">茶陵红茶</h1>
+            <p class="brand-subtitle">CHALING · BLACK TEA</p>
+            <span class="brand-tag">神农故地 · 千年茶韵</span>
+        </header>
+
+        <!-- 波浪分隔 -->
+        <div class="wave-divider"></div>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+
+            <!-- ========== 防伪验证卡片 ========== -->
+            <section class="verify-card" id="verifySection">
+                <div class="card-accent"></div>
+                <div class="verify-status-row">
+                    <div class="verify-icon-wrap verified" id="verifyIcon">
+                        <span class="icon-check">✓</span>
+                        <span class="pulse-ring"></span>
+                    </div>
+                    <div class="verify-text">
+                        <p class="verify-title">正品验证通过</p>
+                        <p class="verify-subtitle">该产品为茶陵红茶官方正品</p>
+                    </div>
+                </div>
+                <div class="verify-details">
+                    <div class="verify-detail-item">
+                        <span class="detail-label">产品批次</span>
+                        <span class="detail-value" id="batchNo">CL2026-0618</span>
+                    </div>
+                    <div class="verify-detail-item">
+                        <span class="detail-label">验证时间</span>
+                        <span class="detail-value" id="verifyTime">2026-07-01 09:41</span>
+                    </div>
+                    <div class="verify-detail-item">
+                        <span class="detail-label">产品等级</span>
+                        <span class="detail-value">特级 · 春茶</span>
+                    </div>
+                    <div class="verify-detail-item">
+                        <span class="detail-label">产地溯源</span>
+                        <span class="detail-value">湖南·茶陵</span>
+                    </div>
+                </div>
+                <div class="verify-badge">
+                    <span class="dot"></span>
+                    区块链溯源 · 不可篡改
+                </div>
+            </section>
+
+            <!-- ========== 茶陵红茶简介卡片 ========== -->
+            <section class="intro-card" id="introSection">
+                <span class="section-label">品牌溯源</span>
+                <h2 class="section-title">茶陵红茶 · 千年一叶</h2>
+                <p class="section-desc">
+                    茶陵，中国唯一以<span class="highlight-text">"茶"</span>命名的县域，
+                    位于湖南省株洲市，地处罗霄山脉西麓。这里云雾缭绕、溪泉潺潺，
+                    得天独厚的自然环境孕育了<span class="highlight-text">茶陵红茶</span>的非凡品质。
+                    其条索紧结、色泽乌润，冲泡后汤色红艳明亮，滋味醇厚甘鲜，
+                    带有独特的蜜糖香与花果香，回甘悠长，令人回味。
+                </p>
+                <div class="divider-dot">品质特征</div>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <span class="feature-icon">🔴</span>
+                        <span class="feature-name">汤色红亮</span>
+                        <span class="feature-detail">琥珀流光</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🌺</span>
+                        <span class="feature-name">蜜香馥郁</span>
+                        <span class="feature-detail">花果交融</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🍯</span>
+                        <span class="feature-name">滋味醇厚</span>
+                        <span class="feature-detail">回甘悠长</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">⛰️</span>
+                        <span class="feature-name">高山生态</span>
+                        <span class="feature-detail">云雾滋养</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== 神农故事卡片 ========== -->
+            <section class="story-card" id="storySection">
+                <div class="story-header">
+                    <div class="story-icon">🌿</div>
+                    <div class="story-title-group">
+                        <span class="story-label">文化传承</span>
+                        <h2 class="story-title">神农与茶陵</h2>
+                    </div>
+                </div>
+                <blockquote class="story-quote">
+                    "神农尝百草，日遇七十二毒，得茶而解之。"
+                </blockquote>
+                <p class="story-body">
+                    相传五千年前，<span class="story-highlight">炎帝神农氏</span>
+                    在茶陵一带遍尝百草，为民寻药。某日，神农误食毒草，晕厥于山间。
+                    恍惚之中，一阵清风吹过，几片翠叶飘落身旁。神农拾起咀嚼，顿觉
+                    口舌生津、神清气爽，毒性随之化解。<span class="story-highlight">此叶便是茶叶</span>。
+                </p>
+                <p class="story-body" style="margin-top:10px;">
+                    茶陵因此成为<span class="story-highlight">中华茶文化的发源地之一</span>，
+                    "茶陵"之名亦由此而来——意为"茶之丘陵"。
+                    千百年间，这片土地上的茶树生生不息，茶香绵延至今。
+                    每一杯茶陵红茶，都是对神农精神的致敬，
+                    是千年文脉在舌尖的流转。
+                </p>
+                <div class="divider-dot" style="margin-top:16px;">茶陵 · 神农故地</div>
+            </section>
+
+        </main>
+
+        <!-- 底部 -->
+        <footer class="footer-section">
+            <div class="footer-ornament"></div>
+            <p class="footer-text">
+                <strong>茶陵红茶</strong> · 官方防伪溯源<br>
+                扫码验真 · 品味千年茶韵<br>
+                <span style="opacity:0.6;">© 2026 茶陵红茶 版权所有</span>
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- 装饰水印 -->
+    <div class="watermark" aria-hidden="true">茶</div>
+
+    <script>
+        // ==================== 小程序逻辑 ====================
+        (function() {
+            // 模拟从二维码扫码参数获取产品信息
+            // 实际小程序中使用：const query = wx.getLaunchOptionsSync().query;
+            function getQueryParams() {
+                const params = new URLSearchParams(window.location.search);
+                return {
+                    productId: params.get('pid') || 'CL2026-0618',
+                    batchNo: params.get('batch') || 'CL2026-0618',
+                    timestamp: params.get('t') || Date.now(),
+                };
+            }
+
+            const query = getQueryParams();
+
+            // 更新防伪验证信息
+            function updateVerifyInfo() {
+                const batchEl = document.getElementById('batchNo');
+                const timeEl = document.getElementById('verifyTime');
+
+                if (batchEl) {
+                    batchEl.textContent = query.batchNo;
+                }
+                if (timeEl) {
+                    const now = new Date();
+                    const formatted = now.getFullYear() + '-' +
+                        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(now.getDate()).padStart(2, '0') + ' ' +
+                        String(now.getHours()).padStart(2, '0') + ':' +
+                        String(now.getMinutes()).padStart(2, '0');
+                    timeEl.textContent = formatted;
+                }
+            }
+
+            // 模拟防伪验证API调用
+            function simulateVerification() {
+                const verifyIcon = document.getElementById('verifyIcon');
+                // 模拟网络请求延迟
+                setTimeout(() => {
+                    if (verifyIcon) {
+                        verifyIcon.classList.add('verified');
+                        const iconCheck = verifyIcon.querySelector('.icon-check');
+                        if (iconCheck) {
+                            iconCheck.textContent = '✓';
+                        }
+                    }
+                    console.log('✅ 防伪验证完成 - 产品ID:', query.productId);
+                    console.log('📦 批次号:', query.batchNo);
+                    console.log('🔒 区块链存证确认');
+                }, 600);
+            }
+
+            // 页面初始化
+            function init() {
+                updateVerifyInfo();
+                simulateVerification();
+
+                // 上报验证事件（实际项目中调用后端API）
+                console.log('📱 扫码验证事件已记录');
+                console.log('📍 产品溯源信息: 湖南·茶陵 | 特级春茶');
+                console.log('🌿 茶陵红茶 · 神农故地 · 千年茶韵');
+            }
+
+            // DOM加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // ==================== 导出文案数据（供搭扣平台使用） ====================
+            window.TeaLingCopy = {
+                // 品牌基础信息
+                brand: {
+                    name: '茶陵红茶',
+                    englishName: 'CHALING BLACK TEA',
+                    tagline: '神农故地 · 千年茶韵',
+                    origin: '湖南·茶陵',
+                    grade: '特级 · 春茶',
+                },
+
+                // 防伪验证文案
+                verification: {
+                    successTitle: '正品验证通过',
+                    successSubtitle: '该产品为茶陵红茶官方正品',
+                    badgeText: '区块链溯源 · 不可篡改',
+                    labels: {
+                        batch: '产品批次',
+                        time: '验证时间',
+                        grade: '产品等级',
+                        origin: '产地溯源',
+                    },
+                },
+
+                // 茶陵红茶简介
+                intro: {
+                    sectionLabel: '品牌溯源',
+                    title: '茶陵红茶 · 千年一叶',
+                    description: '茶陵，中国唯一以"茶"命名的县域，位于湖南省株洲市，地处罗霄山脉西麓。这里云雾缭绕、溪泉潺潺，得天独厚的自然环境孕育了茶陵红茶的非凡品质。其条索紧结、色泽乌润，冲泡后汤色红艳明亮，滋味醇厚甘鲜，带有独特的蜜糖香与花果香，回甘悠长，令人回味。',
+                    features: [
+                        { name: '汤色红亮', detail: '琥珀流光', icon: '🔴' },
+                        { name: '蜜香馥郁', detail: '花果交融', icon: '🌺' },
+                        { name: '滋味醇厚', detail: '回甘悠长', icon: '🍯' },
+                        { name: '高山生态', detail: '云雾滋养', icon: '⛰️' },
+                    ],
+                },
+
+                // 神农故事
+                story: {
+                    sectionLabel: '文化传承',
+                    title: '神农与茶陵',
+                    quote: '神农尝百草，日遇七十二毒，得茶而解之。',
+                    body1: '相传五千年前，炎帝神农氏在茶陵一带遍尝百草，为民寻药。某日，神农误食毒草，晕厥于山间。恍惚之中，一阵清风吹过，几片翠叶飘落身旁。神农拾起咀嚼，顿觉口舌生津、神清气爽，毒性随之化解。此叶便是茶叶。',
+                    body2: '茶陵因此成为中华茶文化的发源地之一，"茶陵"之名亦由此而来——意为"茶之丘陵"。千百年间，这片土地上的茶树生生不息，茶香绵延至今。每一杯茶陵红茶，都是对神农精神的致敬，是千年文脉在舌尖的流转。',
+                },
+
+                // 页脚
+                footer: {
+                    text: '茶陵红茶 · 官方防伪溯源',
+                    subtext: '扫码验真 · 品味千年茶韵',
+                    copyright: '© 2026 茶陵红茶 版权所有',
+                },
+            };
+
+            console.log('🍵 茶陵红茶小程序文案数据已就绪 - 可通过 window.TeaLingCopy 访问');
+            console.log('📋 以上文案可直接复制用于搭扣平台或其他小程序搭建工具');
+        })();
+    </script>
+
+</body>
+</html>
